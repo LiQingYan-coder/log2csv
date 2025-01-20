@@ -1,0 +1,7 @@
+{
+    "comment1": "true  在生成csv时，会弹窗，允许手动选择存储目录， false则会在选取文件的同级目录生成一个临时的csv文件",
+    "manual_output_selection": false,
+    "comment2": "决定要不要在生成图片之后，主动弹窗打开图表",
+    "auto_open_pic_as_html": false,
+	"already_have_csv_and_pic_dont_need_generate_again":false
+}
