@@ -1,8 +1,9 @@
 @echo off
 cd /d %~dp0
-python code\envPrepare.py
-python code\Tool.py
-python code\log2csv.py
+python src\envPrepare.py
+python src\Tool.py
+python src\folder2pics.py
 
-echo Finish, terminal will remain 10 mins
-timeout /t 600 /nobreak
+
+echo ######### Finish, terminal will remain 10 mins #########
+timeout /t 600 /nobreak 

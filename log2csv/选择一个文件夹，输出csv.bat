@@ -1,8 +1,8 @@
 @echo off
 cd /d %~dp0
-python code\envPrepare.py
-python code\Tool.py
-python code\folder2pics.py
+python src\envPrepare.py
+python src\Tool.py
+python src\folder2pics.py
 
 
 echo ######### Finish, terminal will remain 10 mins #########

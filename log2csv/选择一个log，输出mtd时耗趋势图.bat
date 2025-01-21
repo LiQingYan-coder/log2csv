@@ -1,9 +1,9 @@
 @echo off
 cd /d %~dp0
-python code\envPrepare.py
-python code\Tool.py
-python code\log2csv.py
-python code\csv2pic_mtdTime.py
+python src\envPrepare.py
+python src\Tool.py
+python src\log2csv.py
+python src\csv2pic_mtdTime.py
 
 
 echo Finish, terminal will remain 10 mins
