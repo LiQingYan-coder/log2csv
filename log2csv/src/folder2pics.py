@@ -27,12 +27,12 @@ def collect_data_from_folder(folder_path):
 
             log_message("current solving folder: {}".format(subdir))
 
+            if not already_have_csv_and_pic_dont_need_generate_again:
+                process_log_file(log_file_path)
+
             coli_become_slow_result = Tool.judge_coli_slower(csv_file_path)
             if coli_become_slow_result < 0:
                 continue
-
-            if not already_have_csv_and_pic_dont_need_generate_again:
-                process_log_file(log_file_path)
 
             result = getInfo_from_suiteJson(subdir)
             # 额外添加字段如下：

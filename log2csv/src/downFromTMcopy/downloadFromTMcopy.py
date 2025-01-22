@@ -164,10 +164,13 @@ def main():
     if not output_base_folder:
         log_message("未选择文件夹，程序退出")
         return
-    input_file = 'copyFromTm.txt'
+    
+    ## 文件路径配置
+    
+    input_file = 'copy_to_here.txt'
     output_file = 'output.txt'
     table_output_file = 'table_output.txt'
-    mapping_file = 'site_serverIP_mapping.txt'
+    mapping_file = '../../config/site_serverIP_mapping.txt'
     timestamp_list, eid_list, site_name_list, url_list, final_url_list = format_text(input_file, output_file, table_output_file, mapping_file)
     for url in final_url_list:
         if url!= "N/A":
@@ -175,4 +178,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
