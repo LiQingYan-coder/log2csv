@@ -1,7 +1,8 @@
 import json
 import re
 from pathlib import Path
-import Tool
+
+from tool.Tool_general import log_message
 
 
 def load_json(file_path):
@@ -82,22 +83,22 @@ def get_carrier_info(json_file_path):
                 if 'additionalInfo' in item_2:
                     return json.dumps(item_2['additionalInfo'])
                 else:
-                    Tool.log_message("item 2 中没有 additionalInfo 元素")
+                    log_message("item 2 中没有 additionalInfo 元素")
                     return None
             else:
-                Tool.log_message("testcases 中没有 2 元素")
+                log_message("testcases 中没有 2 元素")
                 return None
         else:
-            Tool.log_message("JSON 中没有 testcases 元素")
+            log_message("JSON 中没有 testcases 元素")
             return None
     except FileNotFoundError:
-        Tool.log_message(Warning(f"File {json_file_path} not found."))
+        log_message(Warning(f"File {json_file_path} not found."))
         return None
     except json.JSONDecodeError:
-        Tool.log_message(Warning(f"Error decoding JSON in {json_file_path}."))
+        log_message(Warning(f"Error decoding JSON in {json_file_path}."))
         return None
     except Exception:
-        Tool.log_message(Warning(f"An error occurred while loading {json_file_path}."))
+        log_message(Warning(f"An error occurred while loading {json_file_path}."))
         return None
 
 

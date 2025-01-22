@@ -1,44 +1,50 @@
 import csv
 import os
 import tkinter as tk
-import Tool
 import csv2pic_mtdTime
 from tkinter import filedialog
-from Tool_getInfoFromLoaclFile import getInfo_from_suiteJson
-from Tool import add_file_link_to_result, log_message
+from tool.Tool_getInfoFromLoaclFile import getInfo_from_suiteJson
+from tool.Tool_general import add_file_link_to_result, log_message, log2csv, getGolbalVMFromJson, judge_coli_slower, get_coli_count
 
 def process_log_file(log_file_path):
 
-    Tool.log2csv(log_file_path)
+    # get config from xml
+    need_update_csv = getGolbalVMFromJson("config.json","have_csv_but_need_update")
 
-    dir_path = os.path.dirname(log_file_path)
-    csv_path = os.path.join(dir_path, "temp_console_log.csv")
+    # 如果日志目录下已存在默认生成的 temp_console_log.csv ，则不再重复执行
+    temp_csv_path = os.path.join(log_file_path, "temp_console_log.csv") # 构建 temp_console_log.csv 的路径
+    if os.path.exists(temp_csv_path): # 检测是不是已经存在csv文件
+        if need_update_csv: # 需要更新csv
+            log2csv(log_file_path)
+        else:
+            log_message(f"{temp_csv_path} already exists, no need to process again.")
+    else:
+        log2csv(log_file_path)
+
+    csv_path = os.path.join(os.path.dirname(log_file_path), "temp_console_log.csv")
+    # 根据csv画图,生成html
     csv2pic_mtdTime.csv2pic(csv_path)
 
 def collect_data_from_folder(folder_path):
-    """遍历文件夹并收集数据."""
     results = []
-    already_have_csv_and_pic_dont_need_generate_again = Tool.getGolbalVMFromJson("config.json",
-                                                                              "already_have_csv_and_pic_dont_need_generate_again")
     for subdir, dirs, files in os.walk(folder_path):
         if "console.log" in files:
             log_file_path = os.path.join(subdir, "console.log")
-            csv_file_path = os.path.join(subdir, "temp_console_log.csv")
-
             log_message("current solving folder: {}".format(subdir))
 
-            if not already_have_csv_and_pic_dont_need_generate_again:
-                process_log_file(log_file_path)
+            process_log_file(log_file_path)
 
-            coli_become_slow_result = Tool.judge_coli_slower(csv_file_path)
+            csv_file_path = os.path.join(subdir, "temp_console_log.csv")
+            coli_become_slow_result = judge_coli_slower(csv_file_path)
             if coli_become_slow_result < 0:
+                log_message("coli result < 0, dont generate excel line")
                 continue
 
             result = getInfo_from_suiteJson(subdir)
             # 额外添加字段如下：
             result['Folder'] = subdir
             result['coli_become_slow_result'] = coli_become_slow_result
-            result['coli_count'] = Tool.get_coli_count(csv_file_path)
+            result['coli_count'] = get_coli_count(csv_file_path)
 
             # 添加console log 的超链接
             result['console.log'] = '=HYPERLINK("' + os.path.join(subdir, "console.log") + '","console log")'
@@ -55,12 +61,10 @@ def collect_data_from_folder(folder_path):
     return results
 
 def write_results_to_csv(results, output_file_path):
-    """将结果写入 CSV 文件."""
     if results:
         fieldnames = set().union(*(d.keys() for d in results))
     else:
         fieldnames = []
-
     with open(output_file_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=sorted(fieldnames))
         writer.writeheader()
@@ -69,7 +73,6 @@ def write_results_to_csv(results, output_file_path):
 def folder2pics():
     root = tk.Tk()
     root.withdraw()
-
     output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     output_file_path = os.path.join(output_dir, 'report_data.csv')
 

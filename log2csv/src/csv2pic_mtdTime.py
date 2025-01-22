@@ -5,7 +5,7 @@ import plotly.express as px
 import os
 import plotly.io as pio
 
-from Tool import log_message, getGolbalVMFromJson
+from tool.Tool_general import log_message, getGolbalVMFromJson
 
 # mtd指令数量小于此数，则不生成bar图
 minDataSize = 20

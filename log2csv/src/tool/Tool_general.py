@@ -28,13 +28,13 @@ def save_paths_to_json(log_file_path, output_file_path):
         "output_csv_file": output_file_path
     }
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    config_dir = os.path.join(current_directory, '..', 'config')
+    config_dir = os.path.join(current_directory, '../../', 'config')
     json_file_path = os.path.join(config_dir, "temp.json")
 
     with open(json_file_path, "w", encoding="utf-8") as json_file:
         json.dump(file_paths, json_file, ensure_ascii=False, indent=4)
 
-    log_message(f"temp.json saved to {json_file_path}")
+    # log_message(f"temp.json saved to {json_file_path}")
 
 def select_file(dialog_function, title, filetypes, defaultextension=None):
     root = tk.Tk()
@@ -118,7 +118,7 @@ def process_log_and_saveCSV(log_file_path):
 # 读取config文件夹中json获取全局变量
 def getGolbalVMFromJson(fileName, jsonElement):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_dir = os.path.join(script_dir, '..', 'config')
+    config_dir = os.path.join(script_dir, '../../', 'config')
     config_path = os.path.join(config_dir, fileName)
     with open(config_path, "r", encoding="utf-8") as config_file:
         config = json.load(config_file)
