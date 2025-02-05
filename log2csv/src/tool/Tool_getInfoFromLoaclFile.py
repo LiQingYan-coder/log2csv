@@ -30,13 +30,16 @@ def get_flat_report_as_key_value(folder_path):
         custom_report_default = data.get('customReport', {}).get('Default', {})
 
         # 统计载波个数
-        nr_count, lte_count = count_rat_information(suite_json_path)
+        nr_count, lte_count ,w_count, g_count, nb_count = count_rat_information(suite_json_path)
 
         # 合并所有数据为平级结构（键值对）
         key_value_pairs = {**report_summary_default,
                            **custom_report_default,
                            "nr_count": nr_count,
                            "lte_count": lte_count,
+                           "w_count": w_count,
+                           "g_count": g_count,
+                           "nb_count": nb_count,
                            "NR_LTE_all_count": lte_count+nr_count
                            }
 
@@ -107,10 +110,16 @@ def count_rat_information(suite_json_path):
     if additional_info:
         nr_count = len(re.findall(r'RAT = NR', additional_info))
         lte_count = len(re.findall(r'RAT = LTE', additional_info))
+        w_count = len(re.findall(r'RAT = WCDMA', additional_info))
+        g_count = len(re.findall(r'RAT = GSM', additional_info))
+        nb_count = len(re.findall(r'RAT = NBIOT', additional_info))
     else:
         nr_count = 0
         lte_count = 0
-    return nr_count, lte_count
+        w_count = 0
+        g_count = 0
+        nb_count = 0
+    return nr_count, lte_count, w_count, g_count, nb_count
 
 ## UT
 # if __name__ == "__main__":

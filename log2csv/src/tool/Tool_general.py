@@ -170,7 +170,7 @@ def make_text_selectable(html_file):
         file.write(content)
 
 
-## 判断coli时延相比于正常，总计慢了多少，最后输出csv表格的时候，会用到这个方法。
+## 判断coli时延相比于正常，总计慢了多少s，最后输出csv表格的时候，会用到这个方法。
 def howMuch_coli_slower(csv_path):
     df = pd.read_csv(csv_path)
     # 筛选出Content列包含'onfig'的数据行

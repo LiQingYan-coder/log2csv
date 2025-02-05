@@ -4,7 +4,9 @@ import tkinter as tk
 import csv2pic_mtdTime
 from tkinter import filedialog
 from tool.Tool_getInfoFromLoaclFile import getInfo_from_suiteJson
-from tool.Tool_general import add_file_link_to_result, log_message, log2csv, getGolbalVMFromJson, judge_coli_slower, get_coli_count
+from tool.Tool_general import add_file_link_to_result, log_message, log2csv, getGolbalVMFromJson, judge_coli_slower, \
+    get_coli_count, howMuch_coli_slower
+
 
 def process_log_file(log_file_path):
 
@@ -12,13 +14,15 @@ def process_log_file(log_file_path):
     need_update_csv = getGolbalVMFromJson("config.json","have_csv_but_need_update")
 
     # 如果日志目录下已存在默认生成的 temp_console_log.csv ，则不再重复执行
-    temp_csv_path = os.path.join(log_file_path, "temp_console_log.csv") # 构建 temp_console_log.csv 的路径
+    folder_path = os.path.dirname(log_file_path)
+    temp_csv_path = os.path.join(folder_path, "temp_console_log.csv") # 构建 temp_console_log.csv 的路径
     if os.path.exists(temp_csv_path): # 检测是不是已经存在csv文件
         if need_update_csv: # 需要更新csv
             log2csv(log_file_path)
         else:
             log_message(f"{temp_csv_path} already exists, no need to process again.")
     else:
+        log_message(f"{temp_csv_path} dont exists, need prase...")
         log2csv(log_file_path)
 
     csv_path = os.path.join(os.path.dirname(log_file_path), "temp_console_log.csv")
@@ -45,6 +49,7 @@ def collect_data_from_folder(folder_path):
             result['Folder'] = subdir
             result['coli_become_slow_result'] = coli_become_slow_result
             result['coli_count'] = get_coli_count(csv_file_path)
+            result['slow_time'] = howMuch_coli_slower(csv_file_path)
 
             # 添加console log 的超链接
             result['console.log'] = '=HYPERLINK("' + os.path.join(subdir, "console.log") + '","console log")'

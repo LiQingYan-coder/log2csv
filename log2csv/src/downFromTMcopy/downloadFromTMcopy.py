@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 import subprocess
 import re
@@ -25,6 +26,83 @@ def check_and_install_package(package_name):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
         log_message(f"{package_name} 已安装完成")
 
+def downLoad_consolelog(url,output_folder_of_this_log):
+    new_url = url.replace("/#/suite", "/console.log")
+    log_message(f"Downloading {new_url}")
+    try:
+        # 暂时关闭 SSL 证书验证，仅用于开发或测试环境
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        response = requests.get(new_url, verify=False)
+    except requests.exceptions.SSLError as e:
+        log_message(f"SSL 错误: {e}")
+        return
+    consolelog_output_path = os.path.join(output_folder_of_this_log, "console.log")
+    with open(consolelog_output_path, "wb") as f:
+        f.write(response.content)
+    log_message(f"console.log is saved as  {consolelog_output_path}")
+
+def downLoad_suitejson(url,output_folder_of_this_log):
+    # 确保 json 子文件夹存在
+    json_output_path = os.path.join(output_folder_of_this_log, "json")
+    os.makedirs(json_output_path, exist_ok=True)
+
+    new_url = url.replace("/#/suite", "/json/suite.json")
+    log_message(f"Downloading {new_url}")
+    try:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        response = requests.get(new_url, verify=False)
+    except requests.exceptions.SSLError as e:
+        return
+    output_file_path = os.path.join(json_output_path, "suite.json")
+    with open(output_file_path, "wb") as f:
+        f.write(response.content)
+    log_message(f"suite.json is saved as  {output_file_path}")
+
+def downLoad_suitexml(url,output_folder_of_this_log):
+
+    new_url = url.replace("/#/suite", "/suitefile/meta.json")
+
+    try:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        response = requests.get(new_url, verify=False)
+    except requests.exceptions.SSLError as e:
+        log_message(f"SSL 错误: {e}")
+        return
+    try:
+        # 将字符串解析为 Python 对象
+        data = json.loads(response.content)
+        # 提取第一个元素中 'label' 键对应的值
+        label_value = data[0].get('label')
+        log_message("suite.xml name is: ",label_value)
+    except json.JSONDecodeError:
+        log_message("输入的字符串不是有效的 JSON 格式。")
+        return
+    except IndexError:
+        log_message("解析后的列表为空，没有元素可供提取。")
+        return
+    except KeyError:
+        log_message("解析后的对象中不存在 'label' 键。")
+        return
+    suitexml_url = url.replace("/#/suite", "/suitefile/"+label_value)
+
+    # 获取suiteName之后，下载suite.xml
+    # 确保 json 子文件夹存在
+    suite_output_path = os.path.join(output_folder_of_this_log, "suitefile")
+    os.makedirs(suite_output_path, exist_ok=True)
+    log_message(f"Downloading {suitexml_url}")
+    try:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        response2 = requests.get(suitexml_url, verify=False)
+    except requests.exceptions.SSLError as e:
+        log_message(f"SSL 错误: {e}")
+        return
+
+    output_file_path = os.path.join(suite_output_path, label_value)
+    with open(output_file_path, "wb") as f:
+        f.write(response2.content)
+    log_message(f"suite.json is saved as  {output_file_path}")
+
+
 
 def process_url(url, output_base_folder):
     # 使用正则表达式提取 14 位时间戳
@@ -40,38 +118,11 @@ def process_url(url, output_base_folder):
         return
 
     # 处理下载 console.log 文件
-    new_url = url.replace("/#/suite", "/console.log")
-    log_message(f"Downloading {new_url}")
-    try:
-        # 暂时关闭 SSL 证书验证，仅用于开发或测试环境
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        response = requests.get(new_url, verify=False)
-    except requests.exceptions.SSLError as e:
-        log_message(f"SSL 错误: {e}")
-        return
-    consolelog_output_path = os.path.join(output_folder_of_this_log, "console.log")
-    with open(consolelog_output_path, "wb") as f:
-        f.write(response.content)
-    log_message(f"console.log is saved as  {consolelog_output_path}")
-
-
-    # 确保 json 子文件夹存在
-    json_output_path = os.path.join(output_folder_of_this_log, "json")
-    os.makedirs(json_output_path, exist_ok=True)
-
-    # 修改 URL 并下载 suite.json 文件
-    new_url = url.replace("/#/suite", "/json/suite.json")
-    log_message(f"Downloading {new_url}")
-    try:
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        response = requests.get(new_url, verify=False)
-    except requests.exceptions.SSLError as e:
-        return
-    output_file_path = os.path.join(json_output_path, "suite.json")
-    with open(output_file_path, "wb") as f:
-        f.write(response.content)
-    log_message(f"suite.json is saved as  {output_file_path}")
-
+    downLoad_consolelog(url, output_folder_of_this_log)
+    # json
+    downLoad_suitejson(url, output_folder_of_this_log)
+    #
+    downLoad_suitexml(url, output_folder_of_this_log)
 
 def read_mapping_file(mapping_file):
     mapping_dict = {}

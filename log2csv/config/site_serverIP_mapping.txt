@@ -1,0 +1,4 @@
+caot.te.windows https://hwctrweb.sero.wh.rnd.internal.ericsson.com/proj/ctr/production/EID/logs/TIME/#/suite
+cnbj.rbs.rpv    https://100.98.147.35/ngte/bj/production/EID/logs/TIME/#/suite
+seki.module.rpv https://100.98.147.35/ngte/bj/production/EID/logs/TIME/#/suite
+cncd.rbs.rpv	https://100.98.147.35/ngte/bj/production/EID/logs/TIME/#/suite
