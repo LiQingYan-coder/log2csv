@@ -35,11 +35,11 @@ def get_flat_report_as_key_value(folder_path):
         # 合并所有数据为平级结构（键值对）
         key_value_pairs = {**report_summary_default,
                            **custom_report_default,
-                           "nr_count": nr_count,
-                           "lte_count": lte_count,
-                           "w_count": w_count,
-                           "g_count": g_count,
-                           "nb_count": nb_count,
+                           "num_nr": nr_count,
+                           "num_lte": lte_count,
+                           "num_w": w_count,
+                           "num_g": g_count,
+                           "num_nb": nb_count,
                            "NR_LTE_all_count": lte_count+nr_count
                            }
 
