@@ -20,11 +20,11 @@ def log_message(message):
 def check_and_install_package(package_name):
     try:
         importlib.import_module(package_name)
-        log_message(f"{package_name} 已安装")
+        log_message(f"{package_name} installed")
     except ImportError:
-        log_message(f"{package_name} 未安装，正在安装...")
+        log_message(f"{package_name} installing")
         subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-        log_message(f"{package_name} 已安装完成")
+        log_message(f"{package_name} finish")
 
 def downLoad_consolelog(url,output_folder_of_this_log):
     new_url = url.replace("/#/suite", "/console.log")
@@ -73,9 +73,9 @@ def downLoad_suitexml(url,output_folder_of_this_log):
         data = json.loads(response.content)
         # 提取第一个元素中 'label' 键对应的值
         label_value = data[0].get('label')
-        log_message("suite.xml name is: ",label_value)
+        # log_message("suite.xml name is: ")
     except json.JSONDecodeError:
-        log_message("输入的字符串不是有效的 JSON 格式。")
+        log_message("in meta.json dont find Json format")
         return
     except IndexError:
         log_message("解析后的列表为空，没有元素可供提取。")
@@ -103,25 +103,23 @@ def downLoad_suitexml(url,output_folder_of_this_log):
     log_message(f"suite.json is saved as  {output_file_path}")
 
 
-
+# 针对处理好的url，进行访问下载操作
 def process_url(url, output_base_folder):
     # 使用正则表达式提取 14 位时间戳
     timestamp = re.search(r"\d{14}", url)
     if timestamp:
         timestamp = timestamp.group()
-        # 组合新文件夹
-        output_folder_of_this_log = os.path.join(output_base_folder, timestamp)
-        # 确保新文件夹存在
-        os.makedirs(output_folder_of_this_log, exist_ok=True)
+        output_folder_of_this_log = os.path.join(output_base_folder, timestamp) # 组合新文件夹
+        os.makedirs(output_folder_of_this_log, exist_ok=True)# 确保新文件夹存在
     else:
-        log_message("Warning！ Input url dont find 14 timestamp.")
+        log_message("Warning！ 处理后的url不包含14位时间戳")
         return
 
     # 处理下载 console.log 文件
     downLoad_consolelog(url, output_folder_of_this_log)
     # json
     downLoad_suitejson(url, output_folder_of_this_log)
-    #
+    # suite.xml
     downLoad_suitexml(url, output_folder_of_this_log)
 
 def read_mapping_file(mapping_file):
@@ -215,18 +213,19 @@ def main():
     if not output_base_folder:
         log_message("未选择文件夹，程序退出")
         return
-    
+
     ## 文件路径配置
-    
+
     input_file = 'copy_to_here.txt'
-    output_file = 'output.txt'
+    output_file = 'urlDebug.txt'
     table_output_file = 'table_output.txt'
     mapping_file = '../../config/site_serverIP_mapping.txt'
     timestamp_list, eid_list, site_name_list, url_list, final_url_list = format_text(input_file, output_file, table_output_file, mapping_file)
     for url in final_url_list:
         if url!= "N/A":
+            log_message("###↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Begin ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓##")
             process_url(url, output_base_folder)
-
+            log_message("################# Done #######################")
 
 if __name__ == "__main__":
 

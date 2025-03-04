@@ -35,21 +35,29 @@ def collect_data_from_folder(folder_path):
         if "console.log" in files:
             log_file_path = os.path.join(subdir, "console.log")
             log_message("current solving folder: {}".format(subdir))
+            # 检测一下输入的log，是否值得分析，数据太少可能测试没跑起来，那就跳过
+            try:
+                with open(log_file_path, 'r') as file:
+                    if sum(1 for line in file) < 40:
+                        log_message("文件行数小于 40，跳过当前循环")
+                        continue
+            except FileNotFoundError:
+                log_message(f"fileNotFound: {log_file_path}")
 
             process_log_file(log_file_path)
 
             csv_file_path = os.path.join(subdir, "temp_console_log.csv")
             coli_become_slow_result = judge_coli_slower(csv_file_path)
-            if coli_become_slow_result < 0:
-                log_message("coli result < 0, dont generate excel line")
-                continue
+            # if coli_become_slow_result < 0:
+            #     log_message("coli result < 0, dont generate excel line")
+            #     continue
 
             result = getInfo_from_suiteJson(subdir)
             # 额外添加字段如下：
             result['Folder'] = subdir
-            result['coli_become_slow_result'] = coli_become_slow_result
-            result['coli_count'] = get_coli_count(csv_file_path)
-            result['slow_time'] = howMuch_coli_slower(csv_file_path)
+            result['coli_slow_or_not'] = coli_become_slow_result
+            result['coli_count(tiao)'] = get_coli_count(csv_file_path)
+            result['duration_from_coliSlow(s)'] = howMuch_coli_slower(csv_file_path)
 
             # 添加console log 的超链接
             result['console.log'] = '=HYPERLINK("' + os.path.join(subdir, "console.log") + '","console log")'
@@ -85,7 +93,7 @@ def folder2pics():
     if folder_path:
         results = collect_data_from_folder(folder_path)
         write_results_to_csv(results, output_file_path)
-        print(f"Logs report file has been created at: {output_file_path}")
+        log_message(f"Logs report file has been created at: {output_file_path}")
 
 if __name__ == "__main__":
     folder2pics()

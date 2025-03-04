@@ -40,7 +40,7 @@ def get_flat_report_as_key_value(folder_path):
                            "num_w": w_count,
                            "num_g": g_count,
                            "num_nb": nb_count,
-                           "NR_LTE_all_count": lte_count+nr_count
+                           # "NR_LTE_all_count": lte_count+nr_count
                            }
 
         excluded_fields = {

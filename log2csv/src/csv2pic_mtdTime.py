@@ -24,7 +24,7 @@ def read_and_filter_csv(file_path, filter_keyword):
         log_message(f"ERROR: {e}")
         return None
     except Exception as e:
-        print(f"其他未知错误: {e}")
+        log_message(f"其他未知错误: {e}")
         return None
 
     # 只有当读取文件成功，df有值了，才进行后续操作
@@ -70,9 +70,9 @@ def csv2pic(csv_path):
     if filtered_df is None:
         log_message("After filtering [" + filter_keyword + "] in CSV, data is none, dont generate bar chart")
         return
-    if len(filtered_df) < minDataSize:
-        log_message("After filtering [" + filter_keyword + "] in CSV, data is less than " + str(minDataSize) + ", dont generate bar chart")
-        return
+    # if len(filtered_df) < minDataSize:
+    #     log_message("After filtering [" + filter_keyword + "] in CSV, data is less than " + str(minDataSize) + ", dont generate bar chart")
+    #     return
 
     filtered_df['Content'] = filtered_df['Content'].apply(lambda x: truncate_content(x, 180))
     subset_df = filtered_df[['Timestamp', 'Time Difference (s)', 'Content']]
